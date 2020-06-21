@@ -17,12 +17,13 @@ func main() {
 	// 创建接力棒
 	baton := make(chan int)
 	// 计数器加1
-	wg.Add(4)
+	wg.Add(1)
 
-	go RunnerV2("hugo", baton)
-	go RunnerV2("soleil", baton)
-	go RunnerV2("nico", baton)
-	go RunnerV2("seriline", baton)
+	// go RunnerV2("hugo", baton)
+	// go RunnerV2("soleil", baton)
+	// go RunnerV2("nico", baton)
+	// go RunnerV2("seriline", baton)
+	go Runner(baton)
 
 	baton <- 1
 	// 等待比赛结束
@@ -35,24 +36,22 @@ func Runner(baton chan int) {
 	// 新选手
 	var newRunner int
 	// 选手等待接力棒
-	runner, ok := <-baton
-	if ok {
-		fmt.Printf("选手%d开始进行接力\n", runner)
-	} else {
-		wg.Done()
-		return
-	}
+	runner := <-baton
+	fmt.Printf("选手%d开始进行接力\n", runner)
 
 	// 比赛是否结束
 	if runner != 4 {
 		newRunner = runner + 1
+		fmt.Printf("选手%d准备接棒\n", newRunner)
+		go Runner(baton)
 	} else {
 		fmt.Printf("选手%d完成了比赛\n", runner)
-		close(baton)
+		wg.Done()
+		return
 	}
-	go Runner(baton)
 	// 模拟选手进行跑步
 	time.Sleep(1 * time.Second)
+
 	fmt.Printf("选手%d将接力棒交给下一位选手%d\n", runner, newRunner)
 	// 放到队列
 	baton <- newRunner
