@@ -1,0 +1,10 @@
+.vscode/
+.idea/
+__pycache__
+log.log
+migrations/
+docs/
+.qiniu_*
+static
+ws/client/
+__pycache__
